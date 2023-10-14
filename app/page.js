@@ -34,7 +34,7 @@ export default function Home() {
                   setTextAreaValue(e.target.value);
                   handleInputChange(e);
                 }}
-                className="min-w-full mb-3 h-36 rounded-lg border border-gray-200 p-4 text-sm leading-tight text-gray-700 placeholder-gray-400 focus:border-purple-500 focus:outline-none"
+                className="min-w-full mb-3 h-36 rounded-lg border border-gray-200 p-4 leading-tight text-gray-700 placeholder-gray-400 focus:border-purple-500 focus:outline-none"
               />
             </div>
 
