@@ -24,7 +24,7 @@ export default function Home() {
       <div className="bg-gradient fixed inset-0 font-sans">
         <div className="fixed left-[50%] top-[50%] max-h-full w-full translate-x-[-50%] translate-y-[-50%] overflow-y-auto p-5 text-center sm:max-w-2xl">
           <h1 className="font-unbounded mb-6 text-4xl font-bold md:text-6xl">
-            Go ahead, be funny.
+            Tell AI a joke.
           </h1>
           <form className="container" onSubmit={handleSubmit}>
             <div className="container min-w-full">
@@ -45,8 +45,8 @@ export default function Home() {
                 type="submit"
               >
                 {isLoading
-                  ? "Joke Transfer Initiated..."
-                  : "Tell OpenAI a Joke!"}
+                  ? "Attempting to be funny..."
+                  : "Submit Joke"}
               </button>
             </div>
           </form>
