@@ -1,17 +1,24 @@
-import './globals.css'
-import { Inter } from 'next/font/google'
+import "./globals.css";
+import { PHProvider, PostHogPageview } from "./providers";
+import { Suspense } from "react";
+import { Inter } from "next/font/google";
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  title: 'AI Joke Tester',
-  description: 'Try out jokes on AI.',
-}
+  title: "AI Joke Tester",
+  description: "Try out jokes on AI.",
+};
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <Suspense>
+        <PostHogPageview />
+      </Suspense>
+      <PHProvider>
+        <body className={inter.className}>{children}</body>
+      </PHProvider>
     </html>
-  )
+  );
 }

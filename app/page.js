@@ -1,5 +1,6 @@
 "use client";
 
+import { usePostHog } from 'posthog-js/react';
 import { useMemo, useState } from "react";
 import { useCompletion } from "ai/react";
 
@@ -8,6 +9,7 @@ import { useCompletion } from "ai/react";
 // set up PostHog to track analytics
 
 export default function Home() {
+  const posthog = usePostHog()
   const [textAreaValue, setTextAreaValue] = useState("");
   const { completion, isLoading, handleInputChange, handleSubmit } =
     useCompletion();
@@ -26,7 +28,12 @@ export default function Home() {
           <h1 className="font-unbounded mb-6 text-4xl font-bold md:text-6xl">
             Tell AI a joke.
           </h1>
-          <form className="container" onSubmit={handleSubmit}>
+          <form className="container" onSubmit={(e) => {
+            posthog?.capture('joke_submitted', {
+              value: textAreaValue
+            })
+            handleSubmit(e);
+          }}>
             <div className="container min-w-full">
               <textarea
                 value={textAreaValue}
@@ -44,9 +51,7 @@ export default function Home() {
                 className="shadow bg-purple-500 hover:bg-purple-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded"
                 type="submit"
               >
-                {isLoading
-                  ? "Attempting to be funny..."
-                  : "Submit Joke"}
+                {isLoading ? "Attempting to be funny..." : "Submit Joke"}
               </button>
             </div>
           </form>
