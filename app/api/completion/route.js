@@ -19,7 +19,7 @@ export async function POST(req) {
     stream: true,
     temperature: 0.6,
     max_tokens: 300,
-    prompt: `Judge this joke according to whether it's funny enough to post publicly on a social media site: \n\n"${prompt}"\n\nOnly allow posts that are appropriate for most people. And respond with either 'funny' or 'not funny'.`,
+    prompt: `Judge this joke on a scale of 1-5: \n\n"${prompt}"\n\nRespond only with the number you rate it as.`,
   });
   // Convert the response into a friendly text-stream
   const stream = OpenAIStream(response);

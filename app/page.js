@@ -12,21 +12,20 @@ import { useCompletion } from "ai/react";
 export default function Home() {
   const posthog = usePostHog();
   const [textAreaValue, setTextAreaValue] = useState("");
+  const [jokeRating, setJokeRating] = useState(null);
   const { isLoading: isJokeLoading, complete: generateJoke } = useCompletion({
     api: "/api/joke",
     onFinish: (_, jokeCompletion) => {
       setTextAreaValue(jokeCompletion);
     },
   });
-  const { completion, isLoading, handleInputChange, handleSubmit } =
-    useCompletion();
-
-  const isFunnyOrNot = useMemo(() => {
-    if (completion.length > 0) {
-      return !completion.toLowerCase().includes("not funny");
-    }
-    return null;
-  }, [completion]);
+  const { isLoading: isJokeRatingLoading, complete: rateJoke } =
+    useCompletion({
+      api: "/api/completion",
+      onFinish: (_, rating) => {
+        setJokeRating(Number(rating))
+      },
+    });
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
@@ -38,10 +37,11 @@ export default function Home() {
           <form
             className="container"
             onSubmit={(e) => {
+              e.preventDefault();
               posthog?.capture("joke_submitted", {
                 value: textAreaValue,
               });
-              handleSubmit(e);
+              rateJoke(textAreaValue);
             }}
           >
             <div className="grid">
@@ -49,6 +49,7 @@ export default function Home() {
                 <button
                   onClick={(e) => {
                     generateJoke();
+                    setJokeRating(null);
                     setTextAreaValue("");
                   }}
                   disabled={isJokeLoading}
@@ -64,8 +65,8 @@ export default function Home() {
               <textarea
                 value={textAreaValue}
                 onChange={(e) => {
+                  setJokeRating(null);
                   setTextAreaValue(e.target.value);
-                  handleInputChange(e);
                 }}
                 className="min-w-full my-3 h-36 rounded-lg border border-gray-200 p-4 leading-tight text-gray-700 placeholder-gray-400 focus:border-purple-500 focus:outline-none"
               />
@@ -73,18 +74,18 @@ export default function Home() {
 
             <div className="container">
               <button
-                disabled={isLoading}
+                disabled={isJokeRatingLoading}
                 className="shadow bg-purple-500 hover:bg-purple-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded"
                 type="submit"
               >
-                {isLoading ? "Attempting to be funny..." : "Rate joke"}
+                {isJokeRatingLoading ? "Attempting to be funny..." : "Rate joke"}
               </button>
             </div>
           </form>
 
-          {isLoading || isFunnyOrNot === null ? null : (
+          {isJokeRatingLoading || jokeRating === null ? null : (
             <h1 className="font-unbounded my-5 text-4xl font-bold md:text-6xl">
-              {isFunnyOrNot ? "Funny!" : "Not funny ☹️"}
+              {jokeRating}
             </h1>
           )}
 
