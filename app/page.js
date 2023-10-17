@@ -1,16 +1,23 @@
 "use client";
 
-import { usePostHog } from 'posthog-js/react';
+import { usePostHog } from "posthog-js/react";
 import { useMemo, useState } from "react";
 import { useCompletion } from "ai/react";
 
-// only allow it to be posted if it's considered funny
-// persist posts that are funny enough on the webpage
-// set up PostHog to track analytics
+// Add a "score this joke" button to fill an "Applause-o-meter" between "not funny" | "ok" | "funny" | "very funny" | "hilarious"
+// Persist posts that are funny enough on the webpage
+// Add a punch it up button below the text area to make the joke "funnier"
+// Fix footer to bottom of page
 
 export default function Home() {
-  const posthog = usePostHog()
+  const posthog = usePostHog();
   const [textAreaValue, setTextAreaValue] = useState("");
+  const { isLoading: isJokeLoading, complete: generateJoke } = useCompletion({
+    api: "/api/joke",
+    onFinish: (_, jokeCompletion) => {
+      setTextAreaValue(jokeCompletion);
+    },
+  });
   const { completion, isLoading, handleInputChange, handleSubmit } =
     useCompletion();
 
@@ -28,12 +35,31 @@ export default function Home() {
           <h1 className="font-unbounded mb-6 text-4xl font-bold md:text-6xl">
             Tell AI a joke.
           </h1>
-          <form className="container" onSubmit={(e) => {
-            posthog?.capture('joke_submitted', {
-              value: textAreaValue
-            })
-            handleSubmit(e);
-          }}>
+          <form
+            className="container"
+            onSubmit={(e) => {
+              posthog?.capture("joke_submitted", {
+                value: textAreaValue,
+              });
+              handleSubmit(e);
+            }}
+          >
+            <div className="grid">
+              <div className="container">
+                <button
+                  onClick={(e) => {
+                    generateJoke();
+                    setTextAreaValue("");
+                  }}
+                  disabled={isJokeLoading}
+                  className="shadow bg-purple-500 hover:bg-purple-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded"
+                  type="button"
+                >
+                  Generate joke
+                </button>
+                <div className="text-xs">(will clear text below)</div>
+              </div>
+            </div>
             <div className="container min-w-full">
               <textarea
                 value={textAreaValue}
@@ -41,7 +67,7 @@ export default function Home() {
                   setTextAreaValue(e.target.value);
                   handleInputChange(e);
                 }}
-                className="min-w-full mb-3 h-36 rounded-lg border border-gray-200 p-4 leading-tight text-gray-700 placeholder-gray-400 focus:border-purple-500 focus:outline-none"
+                className="min-w-full my-3 h-36 rounded-lg border border-gray-200 p-4 leading-tight text-gray-700 placeholder-gray-400 focus:border-purple-500 focus:outline-none"
               />
             </div>
 
@@ -51,7 +77,7 @@ export default function Home() {
                 className="shadow bg-purple-500 hover:bg-purple-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded"
                 type="submit"
               >
-                {isLoading ? "Attempting to be funny..." : "Submit Joke"}
+                {isLoading ? "Attempting to be funny..." : "Rate joke"}
               </button>
             </div>
           </form>
