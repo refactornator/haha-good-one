@@ -1,10 +1,10 @@
 "use client";
 
 import { usePostHog } from "posthog-js/react";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useCompletion } from "ai/react";
 
-// Add a "score this joke" button to fill an "Applause-o-meter" between "not funny" | "ok" | "funny" | "very funny" | "hilarious"
+// Fill an "Applause-o-meter" between "not funny" | "ok" | "funny" | "very funny" | "hilarious"
 // Persist posts that are funny enough on the webpage
 // Add a punch it up button below the text area to make the joke "funnier"
 // Fix footer to bottom of page
